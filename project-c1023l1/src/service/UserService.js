@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 const API_URL = "http://localhost:8080/api";
 
 // Hàm gọi API để lấy danh sách người dùng theo phân trang
-export const getUsers = async (token, page = 0, size = 5) => {
+export const getUsers = async (token, page = 0, size = 10) => {
     try {
         const response = await axios.get(`${API_URL}/users/pagination?page=${page}&size=${size}`, {
             headers: {
@@ -56,7 +56,7 @@ export const saveEmployeeToAPI = async (values, token) => { // Đổi tên hàm 
     }
 };
 // Hàm gọi API để tìm kiếm người dùng
-export const searchUsers = async (userName, fullName, numberPhone, token, page = 0, size = 5) => {
+export const searchUsers = async (userName, fullName, numberPhone, token, page = 0, size = 10) => {
     try {
         const response = await axios.get(`${API_URL}/users/search`, {
             params: {

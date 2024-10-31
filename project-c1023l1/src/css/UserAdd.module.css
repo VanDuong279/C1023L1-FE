@@ -1,0 +1,157 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.wrapper {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form-container {
+    display: flex; /* Thiết lập flexbox */
+    flex-direction: column; /* Sắp xếp theo chiều dọc */
+    align-items: stretch; /* Đảm bảo các phần tử con chiếm toàn bộ chiều rộng */
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%; /* Có thể đặt lại chiều rộng nếu cần */
+    max-width: 1400px; /* Đặt chiều rộng tối đa */
+    height: auto; /* Chiều cao tự động */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.required{
+    color: red;
+}
+.title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+    color: black;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+
+}
+
+.label {
+    width: 25%;
+    font-weight: bold;
+    text-align: left;
+    margin-right: 10px;
+}
+
+.inputField {
+    width: 70%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background-color: #f6f5f5;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.gender-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.gender-options {
+    width: 70%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 10px;
+    gap: 20px; /* Tăng khoảng cách */
+}
+
+.gender-options label {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách nhỏ giữa radio button và nhãn */
+}
+
+.gender-group input[type="radio"] {
+    margin-right: 5px; /* Thêm khoảng cách giữa radio button và nhãn */
+}
+.cancel-button {
+    background: none; /* Loại bỏ nền */
+    border: none; /* Loại bỏ viền */
+    /*color: #bd965f; !* Đặt màu chữ theo ý muốn *!*/
+    font-size: 1rem; /* Đặt kích thước chữ */
+    text-decoration: underline; /* Thêm gạch chân */
+    cursor: pointer; /* Hiển thị con trỏ chuột khi hover */
+    padding: 5px 10px; /* Khoảng cách bên trong nút */
+}
+
+.cancel-button:hover {
+    color: #a07d4d; /* Màu sắc khi hover */
+}
+/* AddUser.module.css */
+
+.error-message {
+    color: red; /* Màu chữ thông báo lỗi */
+    font-size: 14px;
+    margin-top: 5px; /* Khoảng cách giữa ô input và thông báo lỗi */
+    display: block; /* Đảm bảo thông báo lỗi là block để xuống dòng */
+
+}
+
+.icon {
+    margin-right: 8px; /* Khoảng cách giữa icon và text */
+    color: #007bff; /* Màu icon */
+    font-size: 1.2rem; /* Kích thước icon */
+}
+.uploadIcon {
+    display: flex;
+    align-items: center; /* Căn giữa icon và text */
+    padding: 10px 15px; /* Padding cho icon upload */
+    border: 1px solid ; /* Đường viền màu xanh */
+    border-radius: 4px; /* Bo góc giống như input */
+    /*background-color: ; !* Màu nền nhẹ nhàng *!*/
+    cursor: pointer; /* Con trỏ khi hover */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu */
+    /*color: ; !* Màu chữ *!*/
+    font-size: 1rem; /* Kích thước chữ */
+    width: 70%; /* Đặt chiều rộng bằng với input */
+    margin-left: 10px; /* Khoảng cách giữa label và upload icon */
+}
+.uploadIcon:hover {
+    background-color: #e0e0e0; /* Màu nền khi hover */
+}
+
+.uploadButtonIcon {
+    margin-right: 8px; /* Khoảng cách giữa icon upload và text */
+    font-size: 1.2rem; /* Kích thước icon */
+}
+/* CSS cho hình ảnh xem trước trong form cập nhật người dùng */
+.previewImage {
+    max-width: 100px; /* Chiều rộng tối đa */
+    max-height: 100px; /* Chiều cao tối đa */
+    border-radius: 8px; /* Bo góc cho ảnh */
+    margin: 15px; /* Khoảng cách trên */
+
+}
+
+.label1 {
+    display: flex;
+    align-items: center; /* Căn giữa icon và text */
+    font-weight: bold; /* Làm đậm chữ */
+    margin-bottom: 10px; /* Khoảng cách với input */
+    color: #333; /* Màu chữ */
+}
