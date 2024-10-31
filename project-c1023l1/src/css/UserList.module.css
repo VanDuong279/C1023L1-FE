@@ -1,0 +1,210 @@
+/*body {*/
+/*    !*background-color: #f9f9f9;*!*/
+/*}*/
+.page-background {
+    background-color: #f5f1f1; /* Màu nền trắng hơi xám */
+    padding: 20px; /* Khoảng cách bên trong */
+    border-radius: 10px; /* Bo tròn nhẹ góc */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+/* Viền nhạt bao quanh toàn bộ nội dung dưới tiêu đề h2 */
+.content-wrapper {
+    border: 1px solid #ffffff; /* Viền nhạt màu xám */
+    border-radius: 8px;     /* Bo góc nhẹ */
+    padding: 20px;          /* Tạo khoảng cách bên trong */
+    background-color: #fff; /* Màu nền trắng */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ tạo chiều sâu */
+}
+.form-container {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    padding: 15px; /* Tạo khoảng cách bên trong */
+    border-radius: 8px; /* Bo tròn các góc */
+    background-color: white; /* Đặt màu nền trắng để tạo tương phản */
+    border: 1px solid #ccc; /* Thêm viền màu xám nhạt */
+    margin-bottom: 20px; /* Khoảng cách dưới */
+}
+.form-inline {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+.form-inline .form-label {
+    margin-right: 10px;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.form-inline input {
+    margin-right: 10px;
+    width: auto;
+    flex-grow: 1;
+}
+.btn-search {
+    background-color: #bd965f; /* Màu nền */
+    border: 1px solid #ffcc99; /* Thiết lập màu, độ rộng và kiểu viền */
+    border-radius: 50px; /* Bo tròn viền */
+    color: black; /* Màu chữ */
+    padding: 5px 20px; /* Khoảng cách bên trong nút */
+    cursor: pointer; /* Đổi con trỏ khi hover */
+    outline: none; /* Loại bỏ viền mặc định khi bấm vào */
+}
+.btn-search:hover {
+    background-color: #bd965f; /* Màu cam khi hover */
+    border-color: #bd965f;
+    color: white/* Màu viền cam khi hover */
+}
+.add-button-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-radius: 50px;
+}
+/* Thêm vào file CSS tương ứng */
+.btn-add {
+    background-color: #bd965f; /* Màu nền xanh lá, có thể đổi theo ý bạn */
+    color: black; /* Màu chữ */
+    padding: 5px 20px; /* Khoảng cách bên trong nút */
+    border: 2px solid #bd965f; /* Viền cùng màu với nền */
+    border-radius: 50px; /* Bo tròn viền */
+    text-align: center;
+    text-decoration: none; /* Loại bỏ gạch chân */
+    display: inline-block; /* Hiển thị như một khối nội tuyến */
+    font-size: 16px; /* Cỡ chữ */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển đổi */
+    cursor: pointer; /* Đổi con trỏ khi hover */
+}
+
+.btn-add:hover {
+    background-color: #bd965f; /* Màu xanh dương khi hover */
+    border-color: #bd965f;
+    color: white/* Màu viền xanh dương khi hover */
+}
+.text-left {
+    margin-bottom: 20px;
+    background-color:#d3d3d3; /* Màu cam nhạt */
+    padding: 10px; /* Thêm khoảng cách bên trong */
+    border-radius: 5px; /* Bo tròn các góc */
+    color: #333; /* Màu chữ */
+    font-family: Arial, sans-serif; /* Font chữ */
+    text-align: left; /* Căn tiêu đề về góc trái */
+}
+.table-container {
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm đổ bóng */
+    border-radius: 8px; /* Bo tròn các góc */
+    overflow: hidden; /* Đảm bảo phần tử con không vượt ra ngoài */
+    overflow-x: auto; /* Thêm để có thể cuộn bảng nếu cần */
+}
+/* Thêm vào file CSS */
+.table-container th {
+    background-color: #d3d3d3; /* Màu nền xám nhạt */
+    color: #a1a3a3; /* Màu chữ */
+    padding: 12px; /* Khoảng cách bên trong */
+    text-align: center; /* Canh giữa nội dung */
+    font-weight: bold; /* In đậm chữ */
+    border-bottom: 2px solid #ddd; /* Đường viền dưới */
+}
+/* CSS cho icon trong action-buttons */
+.action-buttons i {
+    font-size: 1.25rem; /* Tăng kích thước của biểu tượng */
+}
+/* CSS cho phân trang */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px;
+    background-color: #fff; /* Màu nền trắng tinh tế */
+    border-radius: 8px; /* Bo tròn nhẹ các góc */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    gap: 10px; /* Tăng khoảng cách giữa các phần tử */
+}
+
+.pagination span {
+    font-size: 14px;
+    color: #666; /* Màu xám nhẹ cho chữ */
+}
+
+.pagination input {
+    width: 40px; /* Tăng chiều rộng ô input */
+    height: 30px;
+    text-align: center;
+    border: 1px solid #ccc; /* Đường viền nhẹ màu xám */
+    border-radius: 4px; /* Bo góc nhẹ */
+    outline: none;
+}
+
+.pagination input:focus {
+    border-color: #bd965f; /* Màu xanh khi focus */
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.25); /* Hiệu ứng khi focus */
+}
+
+.pagination button {
+    padding: 5px 12px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa; /* Màu nền trung tính */
+    color: #333; /* Màu chữ đen nhạt */
+    border-radius: 4px; /* Bo góc */
+    transition: background-color 0.2s, color 0.2s; /* Hiệu ứng mượt mà khi hover */
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background-color: #bd965f; /* Màu nền tối hơn khi hover */
+    color: white; /* Màu chữ đổi sang xanh nhẹ khi hover */
+}
+
+.pagination button:disabled {
+    color: #ccc; /* Màu nhạt khi không thể bấm */
+    cursor: not-allowed;
+    background-color: #f8f9fa;
+}
+
+.pagination button:active {
+    background-color: #ddd; /* Màu khi nút bị bấm */
+}
+
+/* UserList.module.css */
+
+/* Styles for the modal */
+.modal-header {
+    background-color: #bd965f; /* Màu nền cho tiêu đề modal */
+    color: white; /* Màu chữ cho tiêu đề */
+}
+
+.modal-title {
+    font-weight: bold; /* Đậm tiêu đề */
+}
+
+.modal-body {
+    background-color: #f8f9fa; /* Màu nền cho thân modal */
+    color: #333; /* Màu chữ cho thân modal */
+    padding: 20px; /* Khoảng cách bên trong modal */
+}
+
+.modal-body p {
+    margin-bottom: 15px; /* Khoảng cách giữa các đoạn văn */
+}
+
+.modal-footer {
+    background-color: #f1f1f1; /* Màu nền cho chân modal */
+    display: flex;
+    justify-content: flex-end; /* Đẩy nút về bên phải */
+}
+
+.btn-secondary {
+    background-color: #007bff; /* Màu nền cho nút Đóng */
+    border: none; /* Không viền */
+}
+
+.btn-secondary:hover {
+    background-color: #0056b3; /* Màu nền khi di chuột qua */
+}
+
+.table-container th,td {
+    border: 1px solid #dee2e6; /* Đường viền cho các ô */
+    padding: 8px; /* Khoảng cách bên trong ô */
+    text-align: left; /* Canh lề văn bản */
+}

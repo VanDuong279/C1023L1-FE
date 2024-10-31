@@ -6,7 +6,9 @@ import { checkUsernameExists, getUserById, updateUser } from "../service/UserSer
 import { storage } from "../firebaseConfig/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {ToastContainer,toast} from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'; // Import CSS for Toastify
+import 'react-toastify/dist/ReactToastify.css';
+import addStyle from "../css/UserAdd.module.css"; // Import CSS for Toastify
+import { Modal, Button } from "react-bootstrap";
 
 
 export default function UpdateUserForm() {
@@ -16,7 +18,10 @@ export default function UpdateUserForm() {
     const [password, setPassword] = useState(""); // Thêm biến để lưu mật khẩu
     const navigate = useNavigate();
     const { userId } = useParams();
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Im5ndXllbmRpbmhoYXVhY2U4Iiwic3ViIjoibmd1eWVuZGluaGhhdWFjZTgiLCJleHAiOjIwOTAwOTI0MDd9.4YrsRllD5jUSUhNhmpA6QjeP777BIjMwkCQwmmojKfg';
+    const [showModal, setShowModal] = useState(false);
+    const [formValues, setFormValues] = useState(null); // State to hold form values before submission
+
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFiYzEyMyIsInN1YiI6ImFiYzEyMyIsImV4cCI6MjA5MDM4ODk2NX0.Na6Tav_y8QJ1cgt4ctM15DonOUISPKXscP_R52z4bVw';
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -24,7 +29,7 @@ export default function UpdateUserForm() {
             setUser(fetchedUser);
             setInitialUsername(fetchedUser.username); // Lưu tên đăng nhập ban đầu
             setUrl(fetchedUser.imgUrl);
-            setPassword(fetchedUser.password); // Lưu mật khẩu vào state
+            // setPassword(fetchedUser.password); // Lưu mật khẩu vào state
         };
 
         fetchUser();
@@ -124,102 +129,161 @@ export default function UpdateUserForm() {
 
         }
     };
+    const handleBack = () => {
+        navigate("/users");
+    };
 
+    const handleOpenModal = (values) => {
+        setFormValues(values); // Lưu các giá trị form hiện tại vào state
+        setShowModal(true);
+    };    const handleCloseModal = () => setShowModal(false);
+    const handleConfirmSubmit = async () => {
+        await handleSubmitUser(formValues); // Gọi hàm submit với các giá trị đã lưu
+        handleCloseModal();
+    };
 
     return (
-        <div className="update-user-container">
+        <div className={addStyle.wrapper}>
+            <div className={addStyle['form-container']}>
+
             <Formik
                 initialValues={initialValues}
-                onSubmit={handleSubmitUser}
+                onSubmit={handleOpenModal}
                 validationSchema={Yup.object(validateEmployee)}
                 enableReinitialize
             >
-                {({ setFieldValue }) => (
+                {({ setFieldValue,handleSubmit , values }) => (
                     <Form>
-                        <h1>Cập nhật Người Dùng</h1>
+                        <h4 className={addStyle['title']}>Update Nhân Viên</h4>
 
                         {/* Các trường thông tin người dùng */}
-                        <div>
-                            <label>Tên Đầy Đủ:</label>
-                            <Field name="fullName" />
-                            <ErrorMessage name="fullName" component="span" />
+                        <div className={addStyle['form-group']}>
+                            <label htmlFor="fullname">Họ và tên:<span className={addStyle['required']}>*</span ></label>
+                            <Field className={addStyle.inputField} name="fullName"/>
                         </div>
-
-                        <div>
-                            <label>Địa Chỉ:</label>
-                            <Field name="address" />
-                            <ErrorMessage name="address" component="span" />
+                        <ErrorMessage name="fullName" component="span" className={addStyle['error-message']}/>
+                        <div className={addStyle['form-group']}>
+                            <label htmlFor="address">Địa chỉ:<span className={addStyle['required']}>*</span></label>
+                            <Field className={addStyle.inputField} name="address"/>
                         </div>
+                        <ErrorMessage name="address" component="span" className={addStyle['error-message']}/>
 
-                        <div>
+
+                        <div className={addStyle['form-group']}>
                             <label>Ngày Sinh:</label>
-                            <Field name="birthday" type="date" />
-                            <ErrorMessage name="birthday" component="span" />
+                            <Field className={addStyle.inputField} name="birthday" type="date"/>
                         </div>
+                        <ErrorMessage name="birthday" component="span" className={addStyle['error-message']}/>
 
-                        <div>
+                        <div className={addStyle['form-group']}>
                             <label>Số Điện Thoại:</label>
-                            <Field name="numberphone" />
-                            <ErrorMessage name="numberphone" component="span" />
+                            <Field className={addStyle.inputField} name="numberphone"/>
                         </div>
+                        <ErrorMessage name="numberphone" component="span" className={addStyle['error-message']}/>
 
-                        <div>
-                            <label>Tên Đăng Nhập:</label>
-                            <Field name="username" />
-                            <ErrorMessage name="username" component="span" />
+
+                        <div className={addStyle['form-group']}>
+                            <label htmlFor="username">Tên tài khoản:<span className={addStyle['required']}>*</span></label>
+                            <Field className={addStyle.inputField} name="username" readOnly/>
                         </div>
+                        <ErrorMessage name="username" component="span" className={addStyle['error-message']}/>
 
-                        <div>
+                        <div className={addStyle['form-group']}>
+                            <label htmlFor="password">Mật khẩu:<span className={addStyle['required']}>*</span></label>
+                            <Field className={addStyle.inputField} name="password" type="password" readOnly/>
+                        </div>
+                        <ErrorMessage name="password" component="span" className={addStyle['error-message']}/>
+
+                        <div className={addStyle['form-group']}>
                             <label>Email:</label>
-                            <Field name="email" />
-                            <ErrorMessage name="email" component="span" />
+                            <Field className={addStyle.inputField} name="email"/>
                         </div>
+                        <ErrorMessage name="email" component="span" className={addStyle['error-message']}/>
 
-                        <div>
-                            <label>Lương:</label>
-                            <Field name="salary" type="number" />
-                            <ErrorMessage name="salary" component="span" />
+                        <div className={addStyle['form-group']}>
+                            <label htmlFor="salary">Lương:<span className={addStyle['required']}>*</span></label>
+                            <Field className={addStyle.inputField} name="salary" type="number"/>
                         </div>
+                        <ErrorMessage name="salary" component="span" className={addStyle['error-message']}/>
 
-                        <div>
-                            <label>Giới Tính:</label>
-                            <div>
-                                <label>
-                                    <Field type="radio" name="gender" value="true" />
+                        <div className={addStyle['form-group']}>
+                            <label className={addStyle['gender-label']}>Giới Tính:</label>
+                            <div className={addStyle['gender-options']}>
+                                <label className={addStyle['gender-label']}>
+                                    <Field type="radio" name="gender" value="true"/>
                                     Nam
                                 </label>
-                                <label>
-                                    <Field type="radio" name="gender" value="false" />
+                                <label className={addStyle['gender-label']}>
+                                    <Field type="radio" name="gender"
+                                           value="false"/>
                                     Nữ
                                 </label>
-                                <ErrorMessage name="gender" component="span" />
                             </div>
                         </div>
+                        <ErrorMessage name="gender" component="span" className={addStyle['error-message']}/>
 
-                        <div>
-                            <label>Ảnh:</label>
-                            <input type="file" onChange={(e) => handleImageChange(e, setFieldValue)} />
-                            {url && <img src={url} alt="Uploaded" width="100" />}
+
+                        <div className={addStyle['form-group']}>
+                            <label htmlFor="image" className={addStyle.label1}>
+                                <i className={`fas fa-image ${addStyle.icon}`}></i> {/* Icon hình ảnh */}
+                                Ảnh:
+                            </label>
+                            <input
+                                className={addStyle.inputField}
+                                type="file"
+                                id="image"
+                                onChange={(e) => handleImageChange(e, setFieldValue)}
+                                style={{ display: 'none' }} // Ẩn ô input gốc
+                            />
+                            <div
+                                className={addStyle.uploadIcon}
+                                onClick={() => document.getElementById('image').click()} // Khi click vào icon, gọi ô input
+                            >
+                                <i className={`fas fa-upload ${addStyle.uploadButtonIcon}`}></i> {/* Icon upload */}
+                                <span >Upload Ảnh</span>
+                            </div>
                         </div>
+                        {url && <img src={url} alt="Uploaded" className={addStyle.previewImage} />}
 
-                        <div>
-                            <label>Quyền:</label>
-                            <Field name="roleId" as="select">
+
+
+                        <div className={addStyle['form-group']}>
+                            <label htmlFor="position">Vị trí:<span className={addStyle['required']}>*</span></label>
+                            <Field className={addStyle.inputField} name="roleId" as="select">
                                 <option value="1">Nhân viên</option>
                                 <option value="2">Admin</option>
                             </Field>
-                            <ErrorMessage name="roleId" component="span" />
                         </div>
+                        <ErrorMessage name="roleId" component="span" className={addStyle['error-message']}/>
 
-                        <div>
-                            <label>Mật khẩu:</label>
-                            <Field name="password" type="password" />
-                            <ErrorMessage name="password" component="span" />
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                <button className={addStyle['cancel-button']} type="button" onClick={handleBack}>Cancel</button>
+                            </div>
+                            <div>
+                                <button type="submit" onClick={handleOpenModal} className="btn btn-secondary" style={{border:"none",borderRadius:"50px",backgroundColor:"#bd965f"}}>Continue <i className="bi bi-arrow-right"></i></button>
+                            </div>
+
+
                         </div>
-                        <button type="submit">Cập nhật</button>
+                        <Modal show={showModal} onHide={handleCloseModal}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Xác Nhận Cập Nhật</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>Bạn có chắc chắn muốn cập nhật thông tin này không?</Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={handleCloseModal}>
+                                    Hủy
+                                </Button>
+                                <Button variant="primary" onClick={handleConfirmSubmit}>
+                                    Cập nhật
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
                     </Form>
                 )}
             </Formik>
+            </div>
         </div>
     );
 }

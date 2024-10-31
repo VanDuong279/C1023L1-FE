@@ -1,15 +1,20 @@
-import React, { useState } from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import React, {useState} from "react";
+import {Formik, Field, Form, ErrorMessage} from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { checkUsernameExists, saveEmployeeToAPI } from "../service/UserService";
-import { storage } from "../firebaseConfig/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {useNavigate} from "react-router-dom";
+import {checkUsernameExists, saveEmployeeToAPI} from "../service/UserService";
+import {storage} from "../firebaseConfig/firebase";
+import {ref, uploadBytes, getDownloadURL} from "firebase/storage";
+import addStyle from '../css/UserAdd.module.css';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import { Modal, Button } from "react-bootstrap"; // Import Modal và Button từ Bootstrap
 
 export default function AddEmployeeForm() {
     const [url, setUrl] = useState(""); // URL của ảnh sau khi upload
     const navigate = useNavigate();
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Im5ndXllbmRpbmhoYXVhY2U4Iiwic3ViIjoibmd1eWVuZGluaGhhdWFjZTgiLCJleHAiOjIwOTAwOTI0MDd9.4YrsRllD5jUSUhNhmpA6QjeP777BIjMwkCQwmmojKfg'; // Thay thế bằng token của bạn
+    const [showModal, setShowModal] = useState(false); // State để điều khiển modal
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFiYzEyMyIsInN1YiI6ImFiYzEyMyIsImV4cCI6MjA5MDM4ODk2NX0.Na6Tav_y8QJ1cgt4ctM15DonOUISPKXscP_R52z4bVw'; // Thay thế bằng token của bạn
 
     const initialValues = {
         username: "",
@@ -18,7 +23,7 @@ export default function AddEmployeeForm() {
         numberphone: "",
         gender: "", // Gender là chuỗi
         birthday: "",
-        salary: 0,
+        salary: "",
         roleId: "1", // Role chưa chọn
         password: "",
         email: "",
@@ -49,7 +54,7 @@ export default function AddEmployeeForm() {
                 "is-multiple-of-100000",
                 "Lương phải là bội số của 100.000 VND.",
                 (value) => value % 100000 === 0 // Kiểm tra nếu lương là bội số của 100.000
-            ),        roleId: Yup.string()
+            ), roleId: Yup.string()
             .required("Quyền là bắt buộc.")
             .oneOf(["1", "2"], "Vui lòng chọn quyền hợp lệ.")
             .default("1"),
@@ -79,6 +84,7 @@ export default function AddEmployeeForm() {
     };
 
     const handleSubmitEmployee = async (values) => {
+        console.log(values)
         try {
             await saveEmployeeToAPI(values, token);
             navigate("/users");
@@ -86,107 +92,156 @@ export default function AddEmployeeForm() {
             console.error("Có lỗi xảy ra khi lưu nhân viên.", error);
         }
     };
+    // Hàm mở Modal
+    const handleOpenModal = () => {
+        setShowModal(true);
+    };
 
+    // Hàm đóng Modal
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
     return (
-        <div className="update-employee-container">
-            <Formik
-                initialValues={initialValues}
-                onSubmit={handleSubmitEmployee}
-                validationSchema={Yup.object(validateEmployee)}
-            >
-                {({ setFieldValue }) => (
-                    <Form>
-                        <h1>Thêm mới Nhân Viên</h1>
+        <div className={addStyle.wrapper}>
+            <div className={addStyle['form-container']}>
+                <Formik
+                    initialValues={initialValues}
+                    onSubmit={handleSubmitEmployee}
+                    validationSchema={Yup.object(validateEmployee)}
+                >
+                    {({setFieldValue,handleSubmit}) => (
+                        <Form>
+                            <h4 className={addStyle['title']}>Thêm mới Nhân Viên</h4>
 
-                        <div>
-                            <label>Tên Đầy Đủ:</label>
-                            <Field name="fullName" />
-                            <ErrorMessage name="fullName" component="span" />
-                        </div>
-
-                        <div>
-                            <label>Địa Chỉ:</label>
-                            <Field name="address" />
-                            <ErrorMessage name="address" component="span" />
-                        </div>
-
-                        <div>
-                            <label>Ngày Sinh:</label>
-                            <Field name="birthday" type="date" />
-                            <ErrorMessage name="birthday" component="span" />
-                        </div>
-
-                        <div>
-                            <label>Số Điện Thoại:</label>
-                            <Field name="numberphone" />
-                            <ErrorMessage name="numberphone" component="span" />
-                        </div>
-
-                        <div>
-                            <label>Tên Đăng Nhập:</label>
-                            <Field name="username" />
-                            <ErrorMessage name="username" component="span" />
-                        </div>
-
-                        <div>
-                            <label>Mật Khẩu:</label>
-                            <Field name="password" type="password" />
-                            <ErrorMessage name="password" component="span" />
-                        </div>
-
-                        <div>
-                            <label>Email:</label>
-                            <Field name="email" />
-                            <ErrorMessage name="email" component="span" />
-                        </div>
-
-                        <div>
-                            <label>Lương:</label>
-                            <Field name="salary" type="number" />
-                            <ErrorMessage name="salary" component="span" />
-                        </div>
-
-                        <div>
-                            <label>Giới Tính:</label>
-                            <div>
-                                <label>
-                                    <Field type="radio" name="gender" value="true" />
-                                    Nam
-                                </label>
-                                <label>
-                                    <Field type="radio" name="gender" value="false" />
-                                    Nữ
-                                </label>
-                                <ErrorMessage name="gender" component="span" />
+                            <div className={addStyle['form-group']}>
+                                <label htmlFor="fullname">Họ và tên:<span className={addStyle['required']}>*</span ></label>
+                                <Field className={addStyle.inputField} name="fullName"/>
                             </div>
-                        </div>
+                            <ErrorMessage name="fullName" component="span" className={addStyle['error-message']}/>
 
 
-                        <div>
-                            <label>Ảnh:</label>
-                            <input type="file" onChange={(e) => handleImageChange(e, setFieldValue)} />
-                            {url && <img src={url} alt="Uploaded" width="100" />}
-                        </div>
+                            <div className={addStyle['form-group']}>
+                                <label htmlFor="address">Địa chỉ:<span className={addStyle['required']}>*</span></label>
+                                <Field className={addStyle.inputField} name="address"/>
+                            </div>
+                            <ErrorMessage name="address" component="span" className={addStyle['error-message']}/>
 
-                        <div>
-                            <label>Quyền:</label>
-                            <Field name="roleId" as="select">
-                                <option value="1">Nhân viên</option>
-                                <option value="2">Admin</option>
-                            </Field>
-                            <ErrorMessage name="roleId" component="span" />
-                        </div>
 
-                        <div>
-                            <button type="submit">Thêm mới</button>
-                        </div>
+                            <div className={addStyle['form-group']}>
+                                <label>Ngày Sinh:</label>
+                                <Field className={addStyle.inputField} name="birthday" type="date"/>
+                            </div>
+                            <ErrorMessage name="birthday" component="span" className={addStyle['error-message']}/>
 
-                        <div>
-                            <button type="button" onClick={handleBack}>Trở về</button>
-                        </div>
-                    </Form>
-                )}
-            </Formik>
+                            <div className={addStyle['form-group']}>
+                                <label>Số Điện Thoại:</label>
+                                <Field className={addStyle.inputField} name="numberphone"/>
+                            </div>
+                            <ErrorMessage name="numberphone" component="span" className={addStyle['error-message']}/>
+
+
+                            <div className={addStyle['form-group']}>
+                                <label htmlFor="username">Tên tài khoản:<span className={addStyle['required']}>*</span></label>
+                                <Field className={addStyle.inputField} name="username"/>
+                            </div>
+                            <ErrorMessage name="username" component="span" className={addStyle['error-message']}/>
+
+                            <div className={addStyle['form-group']}>
+                                <label htmlFor="password">Mật khẩu:<span className={addStyle['required']}>*</span></label>
+                                <Field className={addStyle.inputField} name="password" type="password"/>
+                            </div>
+                            <ErrorMessage name="password" component="span" className={addStyle['error-message']}/>
+
+                            <div className={addStyle['form-group']}>
+                                <label>Email:</label>
+                                <Field className={addStyle.inputField} name="email"/>
+                            </div>
+                            <ErrorMessage name="email" component="span" className={addStyle['error-message']}/>
+
+                            <div className={addStyle['form-group']}>
+                                <label htmlFor="salary">Lương:<span className={addStyle['required']}>*</span></label>
+                                <Field className={addStyle.inputField} name="salary" type="number"/>
+                            </div>
+                            <ErrorMessage name="salary" component="span" className={addStyle['error-message']}/>
+
+                            <div className={addStyle['form-group']}>
+                                <label className={addStyle['gender-label']}>Giới Tính:</label>
+                                <div className={addStyle['gender-options']}>
+                                    <label className={addStyle['gender-label']}>
+                                        <Field type="radio" name="gender" value="true"/>
+                                        Nam
+                                    </label>
+                                    <label className={addStyle['gender-label']}>
+                                        <Field type="radio" name="gender"
+                                               value="false"/>
+                                        Nữ
+                                    </label>
+                                </div>
+                            </div>
+                            <ErrorMessage name="gender" component="span" className={addStyle['error-message']}/>
+
+
+                            <div className={addStyle['form-group']}>
+                                <label htmlFor="image" className={addStyle.label1}>
+                                    <i className={`fas fa-image ${addStyle.icon}`}></i> {/* Icon hình ảnh */}
+                                    Ảnh:
+                                </label>
+                                <input
+                                    className={addStyle.inputField}
+                                    type="file"
+                                    id="image"
+                                    onChange={(e) => handleImageChange(e, setFieldValue)}
+                                    style={{ display: 'none' }} // Ẩn ô input gốc
+                                />
+                                <div
+                                    className={addStyle.uploadIcon}
+                                    onClick={() => document.getElementById('image').click()} // Khi click vào icon, gọi ô input
+                                >
+                                    <i className={`fas fa-upload ${addStyle.uploadButtonIcon}`}></i> {/* Icon upload */}
+                                    <span className={addStyle.uploadText}>Upload Ảnh</span>
+                                </div>
+                            </div>
+                            {url && <img src={url} alt="Uploaded" className={addStyle.previewImage} />}
+
+
+                            <div className={addStyle['form-group']}>
+                                <label htmlFor="position">Vị trí:<span className={addStyle['required']}>*</span></label>
+                                <Field className={addStyle.inputField} name="roleId" as="select">
+                                    <option value="1">Nhân viên</option>
+                                    <option value="2">Admin</option>
+                                </Field>
+                            </div>
+                            <ErrorMessage name="roleId" component="span" className={addStyle['error-message']}/>
+
+                            <div className="d-flex justify-content-between">
+                                <div>
+                                    <button className={addStyle['cancel-button']} type="button" onClick={handleBack}>Cancel</button>
+                                </div>
+                                <div>
+                                    <button type="button" onClick={handleOpenModal} className="btn btn-secondary" style={{ border: "none", borderRadius: "50px", backgroundColor: "#bd965f" }}>Continue <i className="bi bi-arrow-right"></i></button>
+                                </div>
+                            </div>
+                            {/* Modal */}
+                            <Modal show={showModal} onHide={handleCloseModal}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Xác nhận thêm nhân viên</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>Bạn có chắc chắn muốn thêm nhân viên mới này không?</Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="secondary" onClick={handleCloseModal}>Hủy</Button>
+                                    <Button variant="primary" onClick={() => {
+                                        handleSubmit(); // Thêm nhân viên
+                                        handleCloseModal(); // Đóng modal sau khi thêm
+                                    }}>
+                                        Xác nhận
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                        </Form>
+                    )}
+                </Formik>
+
+            </div>
         </div>
     );
 }

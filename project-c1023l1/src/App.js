@@ -18,7 +18,7 @@ function App() {
       <div className="App">
         <nav>
           <NavLink to="/users" onClick={handleResetList}>Danh sách users</NavLink>
-          <NavLink to="/users/add">Create</NavLink>
+          {/*<NavLink to="/users/add">Create</NavLink>*/}
 
         </nav>
         <Routes>
