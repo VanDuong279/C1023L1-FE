@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Formik, Field, Form, ErrorMessage} from "formik";
 import * as Yup from "yup";
 import {useNavigate} from "react-router-dom";
-import {checkUsernameExists, saveEmployeeToAPI} from "../service/UserService";
+import {checkNumberphoneExists, checkEmailExists, checkUsernameExists, saveEmployeeToAPI,} from "../service/UserService";
 import {storage} from "../firebaseConfig/firebase";
 import {ref, uploadBytes, getDownloadURL} from "firebase/storage";
 import addStyle from '../css/UserAdd.module.css';
@@ -14,7 +14,7 @@ export default function AddEmployeeForm() {
     const [url, setUrl] = useState(""); // URL của ảnh sau khi upload
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false); // State để điều khiển modal
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFiYzEyMyIsInN1YiI6ImFiYzEyMyIsImV4cCI6MjA5MDM4ODk2NX0.Na6Tav_y8QJ1cgt4ctM15DonOUISPKXscP_R52z4bVw'; // Thay thế bằng token của bạn
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImhhdXZpcCIsInN1YiI6ImhhdXZpcCIsImV4cCI6MjA5MDczODU3Mn0.uV13KM04jTu96mzVxIpq6aUky2Swk-cSY-Glm1Qt--E'; // Thay thế bằng token của bạn
 
     const initialValues = {
         username: "",
@@ -31,9 +31,18 @@ export default function AddEmployeeForm() {
     };
 
     const validateEmployee = {
-        fullName: Yup.string().required("Tên là bắt buộc."),
-        address: Yup.string().required("Địa chỉ là bắt buộc."),
-        numberphone: Yup.string().required("Số điện thoại là bắt buộc."),
+        fullName: Yup.string().required("Tên là bắt buộc.")
+            .max(50,"Tên đăng nhập chỉ chứa 50 ký tự "),
+        address: Yup.string().required("Địa chỉ là bắt buộc.")
+            .max(50,"Địa chỉ chứa 50 ký tự "),
+
+        numberphone: Yup.string().required("Số điện thoại là bắt buộc.")
+            .matches(/^0\d{9}$/, "Số điện thoại phải bắt đầu bằng số 0 và có 10 chữ số.")
+            .test("is-unique", "số điện thoaại đã tồn tại.", async (value) => {
+                if (!value) return true; // Nếu không có email, không cần kiểm tra
+                const numberphoneExists = await checkNumberphoneExists(value, token);
+                return !numberphoneExists;
+            }),// Kiểm tra nếu sđt đã tồn tại,
         username: Yup.string()
             .required("Tên đăng nhập là bắt buộc.")
             .min(6, "Tên đăng nhập phải lớn hơn 6 kí tự.")
@@ -46,7 +55,14 @@ export default function AddEmployeeForm() {
             }),
 
         password: Yup.string().required("Mật khẩu là bắt buộc."),
-        email: Yup.string().email("Email không hợp lệ").required("Email là bắt buộc."),
+        email: Yup.string()
+            .email("Email không hợp lệ")
+            .required("Email là bắt buộc.")
+            .test("is-unique", "Email đã tồn tại.", async (value) => {
+        if (!value) return true; // Nếu không có email, không cần kiểm tra
+        const emailExists = await checkEmailExists(value, token);
+        return !emailExists; // Kiểm tra nếu email đã tồn tại
+    }),
         salary: Yup.number()
             .min(0, "Lương phải lớn hơn 0.")
             .required("Lương là bắt buộc.")
@@ -80,14 +96,14 @@ export default function AddEmployeeForm() {
     };
 
     const handleBack = () => {
-        navigate("/users");
+        navigate("/admin/users");
     };
 
     const handleSubmitEmployee = async (values) => {
-        console.log(values)
+        console.log("Submitting employee data:", values); // Log dữ liệu của nhân viên
         try {
             await saveEmployeeToAPI(values, token);
-            navigate("/users");
+            navigate("/admin/users");
         } catch (error) {
             console.error("Có lỗi xảy ra khi lưu nhân viên.", error);
         }
@@ -245,3 +261,15 @@ export default function AddEmployeeForm() {
         </div>
     );
 }
+// <div className={styleDashBoard.wrapper}>
+//     <div className={styleDashBoard['dashboard-container']}>
+//         <div className={styleDashBoard['row-left']}>
+//
+//         </div>
+//         <div className={styleDashBoard['header']}>
+//             <div className={styleDashBoard.nav}>nav nhỏ</div>
+//         </div>
+//         <div className={styleDashBoard['row-right']}>Row Right</div>
+//     </div>
+//     <div className={styleDashBoard['footer']}>Footer</div>
+// </div>

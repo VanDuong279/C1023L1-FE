@@ -1,0 +1,211 @@
+.sidebar {
+    background-color: #F3F6F9; /* Sidebar background color */
+    color: #ffffff;
+    /*position: fixed; !* Hoặc 'sticky' nếu bạn muốn nó dính ở một vị trí nhất định *!*/
+
+}
+.rightSidebar {
+    background-color: #e0e0e0; /* Màu nền giống sidebar */
+    color: #ffffff;
+    min-height: 100vh;
+    width: 10%; /* Đặt độ rộng cột bên phải là 25% */
+    /* Thay đổi giá trị ở đây để điều chỉnh độ rộng */
+}
+
+.header {
+    display: flex;
+    flex-direction: column; /* Đặt chiều dọc cho các phần tử con */
+    align-items: stretch; /* Đảm bảo các phần tử con chiếm đầy chiều rộng */
+}
+
+.headerIcons {
+    /* Điều chỉnh chiều cao của thanh biểu tượng */
+    height: 50px;
+    display: flex;
+    justify-content: flex-end; /* Căn phải cho các biểu tượng */
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+.headerLine {
+    height: 2px; /* Đặt chiều cao cho thanh phân biệt */
+    background-color: #000; /* Màu của thanh phân biệt */
+    margin-top: 8px; /* Khoảng cách giữa thanh biểu tượng và thanh phân biệt */
+}
+
+
+/* Định dạng cho các biểu tượng */
+.headerIcons {
+    display: flex; /* Flex để căn chỉnh biểu tượng */
+    justify-content: flex-end; /* Đẩy các biểu tượng về bên phải */
+    margin-bottom: 10px; /* Khoảng cách giữa các biểu tượng và thanh phân biệt */
+}
+
+
+.headerIcons i:hover {
+    color: #0056b3; /* Màu khi hover */
+}
+
+.row-right {
+    background-color: #61dafb; /* Light background for content */
+    height: 70vh;
+}
+
+
+.container-fluid {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Đặt chiều cao tối thiểu bằng chiều cao viewport */
+}
+
+.row {
+    flex: 1; /* Chiếm không gian còn lại để đẩy footer xuống dưới */
+}
+
+.footer {
+    font-size: 14px;
+    background-color: #F3F6F9;
+    color: black;
+    padding: 10px;
+    text-align: center;
+    height: 100px; /* Chiều cao footer */
+    width: 100%; /* Chiều rộng bằng 100% */
+    position: relative; /* Để footer không bị tràn ra ngoài */
+    bottom: 0; /* Đảm bảo footer luôn nằm ở dưới cùng */
+}
+
+
+.nav-link{
+    color: #61dafb;
+}
+
+
+
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background-color: #f8f9fa; /* Màu nền header */
+    border-bottom: 1px solid #e0e0e0; /* Đường viền dưới của header */
+}
+
+.headerTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333; /* Màu chữ cho tiêu đề */
+}
+
+.headerIcons {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* Khoảng cách giữa các biểu tượng */
+}
+
+.headerIcon {
+    font-size: 1.25rem;
+    color: #007bff;
+    cursor: pointer;
+    transition: color 0.3s ease; /* Hiệu ứng chuyển màu khi hover */
+}
+
+/*.headerIcon:hover {*/
+/*    color: #0056b3; !* Màu khi hover *!*/
+/*}*/
+
+.headerAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+}
+.sidebar .navLink span {
+    font-size: 1.2rem; /* Tăng kích thước chữ */
+}
+
+.sidebar .icon2 {
+    font-size: 18px; /* Đảm bảo kích thước icon đồng nhất */
+    flex-shrink: 0; /* Tránh icon co lại */
+    color: black;
+    margin-right: 0.5rem; /* Điều chỉnh giá trị theo nhu cầu */
+
+}
+.sidebar span{
+    color: black;
+}
+/* Khoảng cách giữa các mục ul trong sidebar */
+
+.nav-item{
+    padding-bottom: 10px;
+    color: black;
+    padding-left: 20px;
+    display: flex;
+    justify-content: flex-start; /* Căn trái cho các mục nav-item */
+    flex-direction: column; /* Đặt hướng thành cột */
+    position: relative;
+    align-items: center;
+    width: 100%; /* Đảm bảo các mục li có chiều rộng đồng đều */
+}
+
+.nav-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Đảm bảo nội dung và đường kẻ rộng đồng đều */
+}
+
+.navLink {
+    display: flex;
+    align-items: center; /* Đảm bảo icon và span luôn thẳng hàng */
+    justify-content: center;
+    gap: 10px; /* Khoảng cách cố định giữa icon và span */
+    padding: 12px 0; /* Tạo chiều cao đồng đều */
+    width: 100%;
+    text-align: left;
+}
+
+.divider {
+    width: 120%; /* Chiều dài cố định cho đường kẻ */
+    height: 1px;
+    background-color: #a19d9d;
+    opacity: 0.6;
+    margin-top: 8px;
+}
+.divider1 {
+    width: 100%; /* Chiều dài cố định cho đường kẻ */
+    height: 1px;
+    background-color: #a19d9d;
+    opacity: 0.6;
+    margin-top: 8px;
+}
+.sm-inline{
+    font-size: 40px;
+    padding-left: 20px;
+}
+.navLink {
+    padding: 10px 15px; /* Thêm khoảng cách bên trong (trên dưới và trái phải) */
+    transition: border 0.3s, background-color 0.3s; /* Thêm hiệu ứng chuyển tiếp */}
+
+.navLink:hover {
+    /*border: 1px solid; !* Viền màu cam khi rê chuột *!*/
+    cursor: pointer; /* Hiển thị con trỏ tay khi rê chuột */
+    border-radius: 20px!important;
+}
+.navLink:hover i,
+.navLink:hover span {
+    color: #ffcc99; /* Đổi màu cho biểu tượng và chữ */
+}
+
+
+.nav-link{
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+}
+.nav-link:hover{
+    color: #ffcc99;
+}
+
+.dash-b i,
+.dash-b span{
+    color: #ffcc99;
+}

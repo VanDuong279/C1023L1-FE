@@ -4,10 +4,9 @@ import { toast } from "react-toastify";
 // URL của API backend
 const API_URL = "http://localhost:8080/api";
 
-// Hàm gọi API để lấy danh sách người dùng theo phân trang
 export const getUsers = async (token, page = 0, size = 10) => {
     try {
-        const response = await axios.get(`${API_URL}/users/pagination?page=${page}&size=${size}`, {
+        const response = await axios.get(`${API_URL}/users/pagination?page=${page}&size=${size}&salaryMin=0`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -18,6 +17,8 @@ export const getUsers = async (token, page = 0, size = 10) => {
         throw error;
     }
 };
+
+
 // Hàm kiểm tra xem tên đăng nhập có tồn tại không
 export const checkUsernameExists = async (username, token) => {
     try {
@@ -35,7 +36,72 @@ export const checkUsernameExists = async (username, token) => {
         return false;
     }
 };
+// Hàm kiểm tra xem email có tồn tại không
+export const checkEmailExists = async (email, token) => {
+    try {
+        const response = await axios.get(`${API_URL}/users`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const emails = response.data.map(user => user.email); // Lấy danh sách email
+        console.log("Emails in database:", emails); // Thêm log để xem danh sách email
+        const exists = emails.includes(email); // Kiểm tra xem email có trong danh sách không
+        console.log(`Email ${email} exists:`, exists); // Log kết quả kiểm tra
+        return exists; // Trả về kết quả
+    } catch (error) {
+        console.error("Error checking email existence:", error);
+        return false; // Trả về false nếu có lỗi xảy ra
+    }
+};
+export const checkEmailExistsForUpdate = async (email, userId, token) => {
+    try {
+        const response = await axios.get(`${API_URL}/users`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const users = response.data; // Lấy danh sách người dùng
+        const exists = users.some(user => user.email === email && user.id !== userId); // Kiểm tra email khác với userId hiện tại
+        return exists; // Trả về true nếu email đã tồn tại cho một user khác
+    } catch (error) {
+        console.error("Error checking email existence:", error);
+        return false; // Trả về false nếu có lỗi xảy ra
+    }
+};
+export const checkNumberPhonneExistsForUpdate = async (numberphone, userId, token) => {
+    try {
+        const response = await axios.get(`${API_URL}/users`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const users = response.data; // Lấy danh sách người dùng
+        const exists = users.some(user => user.numberphone === numberphone && user.id !== userId); // Kiểm tra email khác với userId hiện tại
+        return exists; // Trả về true nếu email đã tồn tại cho một user khác
+    } catch (error) {
+        console.error("Error checking numberphone existence:", error);
+        return false; // Trả về false nếu có lỗi xảy ra
+    }
+};
 
+export const checkNumberphoneExists = async (numberphone, token) => {
+    try {
+        const response = await axios.get(`${API_URL}/users`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const numberphones = response.data.map(user => user.numberphone); // Lấy danh sách email
+        console.log("Emails in database:", numberphones); // Thêm log để xem danh sách email
+        const exists = numberphones.includes(numberphone);
+        console.log(`Email ${numberphone} exists:`, exists); // Log kết quả kiểm tra
+        return exists; // Trả về kết quả
+    } catch (error) {
+        console.error("Error checking email existence:", error);
+        return false; // Trả về false nếu có lỗi xảy ra
+    }
+};
 // Hàm gọi API để thêm mới nhân viên
 export const saveEmployeeToAPI = async (values, token) => { // Đổi tên hàm này
     try {
@@ -56,26 +122,35 @@ export const saveEmployeeToAPI = async (values, token) => { // Đổi tên hàm 
     }
 };
 // Hàm gọi API để tìm kiếm người dùng
-export const searchUsers = async (userName, fullName, numberPhone, token, page = 0, size = 10) => {
+export const searchUsers = async (userName, fullName, numberPhone, token, page = 0, size = 10, minSalary = null) => {
     try {
+        const params = {
+            userName,
+            fullName,
+            numberPhone,
+            page,
+            size,
+        };
+
+        // Thêm minSalary vào params nếu nó khác null (chỉ khi cần lọc theo salary)
+        if (minSalary !== null) {
+            params.minSalary = minSalary;
+        }
+
         const response = await axios.get(`${API_URL}/users/search`, {
-            params: {
-                userName,
-                fullName,
-                numberPhone,
-                page,
-                size,
-            },
+            params,
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
+
         return response.data; // Trả về đối tượng phân trang
     } catch (error) {
         console.error("Error searching users:", error);
         throw error;
     }
 };
+
 
 
 export const updateUser = async (userId, userData, token) => {
