@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkUsernameExists, getUserById, updateUser } from "../service/UserService"; // Import các hàm từ service
+import {
+    checkEmailExistsForUpdate, checkNumberPhonneExistsForUpdate,
+    getUserById,
+    updateUser
+} from "../service/UserService"; // Import các hàm từ service
 import { storage } from "../firebaseConfig/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {ToastContainer,toast} from "react-toastify";
@@ -20,8 +24,10 @@ export default function UpdateUserForm() {
     const { userId } = useParams();
     const [showModal, setShowModal] = useState(false);
     const [formValues, setFormValues] = useState(null); // State to hold form values before submission
+    const [initialEmail, setInitialEmail] = useState(""); // Thêm biến lưu email ban đầu
+    const [initialNumberPhone, setinitialNumberPhone] = useState(""); // Thêm biến lưu email ban đầu
 
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFiYzEyMyIsInN1YiI6ImFiYzEyMyIsImV4cCI6MjA5MDM4ODk2NX0.Na6Tav_y8QJ1cgt4ctM15DonOUISPKXscP_R52z4bVw';
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImhhdXZpcCIsInN1YiI6ImhhdXZpcCIsImV4cCI6MjA5MDczODU3Mn0.uV13KM04jTu96mzVxIpq6aUky2Swk-cSY-Glm1Qt--E';
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -29,6 +35,9 @@ export default function UpdateUserForm() {
             setUser(fetchedUser);
             setInitialUsername(fetchedUser.username); // Lưu tên đăng nhập ban đầu
             setUrl(fetchedUser.imgUrl);
+            setInitialEmail(fetchedUser.email); // Lưu email ban đầu
+            setinitialNumberPhone(fetchedUser.numberphone);
+
             // setPassword(fetchedUser.password); // Lưu mật khẩu vào state
         };
 
@@ -50,36 +59,48 @@ export default function UpdateUserForm() {
         imgUrl: user.imgUrl,
         password: user.password, // Để lại trường mật khẩu trong initialValues
     };
-
+    // Giả lập hàm kiểm tra email đã tồn tại
+    const isEmailTaken = async (email) => {
+        // Giả định kiểm tra email đã tồn tại từ API (thay thế bằng API thực tế)
+        const exists = await checkEmailExistsForUpdate(email);
+        return exists;
+    };
+    const isNumberPhoneTaken = async (numberphone) => {
+        // Giả định kiểm tra email đã tồn tại từ API (thay thế bằng API thực tế)
+        const exists = await checkNumberPhonneExistsForUpdate(numberphone);
+        return exists;
+    };
     const validateEmployee = {
-        fullName: Yup.string().required("Tên là bắt buộc."),
-        address: Yup.string().required("Địa chỉ là bắt buộc."),
-        numberphone: Yup.string().required("Số điện thoại là bắt buộc."),
-        username: Yup.string()
-            .required("Tên đăng nhập là bắt buộc.")
-            .min(6, "Tên đăng nhập phải lớn hơn 6 kí tự.")
-            .matches(/^[^\d]/, "Tên đăng nhập không được bắt đầu bằng số.")
-            .notOneOf(["admin", "root"], "Tên đăng nhập không được là 'admin' hoặc 'root'.")
-            .test("is-unique", "Tên đăng nhập đã tồn tại.", async (value) => {
-                if (value === initialUsername) return true; // Không cần kiểm tra
+        fullName: Yup.string().required("Tên là bắt buộc.")
+            .max(50,"Tên đăng nhập chỉ chứa 50 ký tự "),
+        address: Yup.string().required("Địa chỉ là bắt buộc.")
+            .max(50,"Địa chỉ chứa 50 ký tự "),
 
-                const exists = await checkUsernameExists(value, token);
-                console.log("Checking username:", value, "Exists:", exists); // Debug log
-                return !exists; // Trả về true nếu không tồn tại
+        numberphone: Yup.string().required("Số điện thoại là bắt buộc.")
+            .matches(/^0\d{9}$/, "Số điện thoại phải bắt đầu bằng số 0 và có 10 chữ số.")
+        .test("is-same-email", "số điện thoại đã tồn tại", (value) => {
+            // Nếu email không thay đổi thì bỏ qua kiểm tra
+            return value === initialNumberPhone || !isNumberPhoneTaken(value);
+        }),
+
+        password: Yup.string().required("Mật khẩu là bắt buộc."),
+        email: Yup.string()
+            .email("Email không hợp lệ")
+            .required("Email là bắt buộc.")
+            .test("is-same-email", "Email đã tồn tại", (value) => {
+                // Nếu email không thay đổi thì bỏ qua kiểm tra
+                return value === initialEmail || !isEmailTaken(value);
             }),
 
 
-
-        email: Yup.string().email("Email không hợp lệ").required("Email là bắt buộc."),
         salary: Yup.number()
             .min(0, "Lương phải lớn hơn 0.")
             .required("Lương là bắt buộc.")
             .test(
                 "is-multiple-of-100000",
                 "Lương phải là bội số của 100.000 VND.",
-                (value) => value % 100000 === 0
-            ),
-        roleId: Yup.string()
+                (value) => value % 100000 === 0 // Kiểm tra nếu lương là bội số của 100.000
+            ), roleId: Yup.string()
             .required("Quyền là bắt buộc.")
             .oneOf(["1", "2"], "Vui lòng chọn quyền hợp lệ.")
             .default("1"),
@@ -122,7 +143,7 @@ export default function UpdateUserForm() {
             await updateUser(userId, adjustedValues, token);
             console.log("Update successful, now fetching user list...");
             toast.success("Cập nhật người dùng thành công!"); // Hiển thị toast thành công
-            navigate("/users");
+            navigate("/admin/users");
         } catch (error) {
             console.error("Có lỗi xảy ra khi cập nhật người dùng.", error.response?.data || error.message);
             toast.error("Cập nhật không thành công! Vui lòng thử lại."); // Hiển thị toast lỗi
@@ -130,8 +151,7 @@ export default function UpdateUserForm() {
         }
     };
     const handleBack = () => {
-        navigate("/users");
-    };
+        navigate("/admin/users");    };
 
     const handleOpenModal = (values) => {
         setFormValues(values); // Lưu các giá trị form hiện tại vào state
@@ -154,7 +174,7 @@ export default function UpdateUserForm() {
             >
                 {({ setFieldValue,handleSubmit , values }) => (
                     <Form>
-                        <h4 className={addStyle['title']}>Update Nhân Viên</h4>
+                        <h4 className={addStyle['title']}>Chỉnh sửa Nhân Viên</h4>
 
                         {/* Các trường thông tin người dùng */}
                         <div className={addStyle['form-group']}>

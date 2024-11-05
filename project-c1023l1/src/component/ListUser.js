@@ -7,7 +7,7 @@ import style from '../css/UserList.module.css';
 import { Modal, Button } from 'react-bootstrap'; // Import Modal and Button from react-bootstrap
 
 
-export default function UserList({resetList, setResetList}) {
+export default function UserList({resetList,setResetList}) {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -25,43 +25,57 @@ export default function UserList({resetList, setResetList}) {
     const [numberPhone, setNumberPhone] = useState("");
     const [isSearching, setIsSearching] = useState(false); // Trạng thái tìm kiếm
 
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFiYzEyMyIsInN1YiI6ImFiYzEyMyIsImV4cCI6MjA5MDM4ODk2NX0.Na6Tav_y8QJ1cgt4ctM15DonOUISPKXscP_R52z4bVw';
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImhhdXZpcCIsInN1YiI6ImhhdXZpcCIsImV4cCI6MjA5MDczODU3Mn0.uV13KM04jTu96mzVxIpq6aUky2Swk-cSY-Glm1Qt--E';
     const fetchData = async () => {
+        // console.log("Start fetching data...");
+
         setLoading(true);
+        setError(null);
+
         try {
             const data = isSearching
                 ? await searchUsers(userName, fullName, numberPhone, token, page)
                 : await getUsers(token, page);
+            // console.log("Fetched data:", data);
+
             setUsers(data.content);
             setTotalPages(data.totalPages);
 
-            if (resetList) {
-                // Reset trạng thái tìm kiếm và biến đầu vào khi resetList là true
-                setUserName("");
-                setFullName("");
-                setNumberPhone("");
-                setIsSearching(false);
-                setPage(0); // Đặt lại trang về đầu tiên
-                setResetList(false); // Reset lại trạng thái sau khi tải xong
-            }
         } catch (error) {
-            setError("Có lỗi xảy ra khi lấy danh sách người dùng.");
+            console.error("Error fetching data:", error); // Log thêm để kiểm tra
+            setError("Có lỗi xảy ra khi lấy danh sách người dùng."); // Đặt lại error để kiểm tra vấn đề
+        } finally {
+            setLoading(false); // Đảm bảo loading luôn tắt dù có lỗi hay không
         }
-        setLoading(false);
     };
+    useEffect(() => {
+        // console.log("Reset List:", resetList);
+        if (resetList) {
+            setUserName("");
+            setFullName("");
+            setNumberPhone("");
+            setIsSearching(false);
+            setPage(0);
+            setResetList(false); // Reset lại resetList
+        }
+    }, [resetList]); // Chỉ thực hiện khi resetList thay đổi
 
     useEffect(() => {
-        fetchData();
-    }, [page, resetList]); // Thêm resetList vào dependency
-
-
+        // console.log("Fetching data with page:", page, "isSearching:", isSearching);
+        if (isSearching) {
+            fetchData(); // Khi đang tìm kiếm
+        } else {
+            // Nếu không tìm kiếm, hãy đảm bảo cũng gọi fetchData
+            fetchData();
+        }
+    }, [page, isSearching]); // Gọi lại fetchData mỗi khi page hoặc isSearching thay đổi
     const handleDelete = async () => {
         try {
             await deleteUser(userToDelete.userId, token);
             setShowDeleteModal(false); // Đóng modal sau khi xóa
             fetchData(); // Cập nhật danh sách người dùng sau khi xóa
         } catch (error) {
-            console.error("Error deleting user:", error);
+            // console.error("Error deleting user:", error);
         }
     };
     // Mở modal xác nhận xóa
@@ -74,24 +88,41 @@ export default function UserList({resetList, setResetList}) {
         setShowDeleteModal(false); // Đóng modal xác nhận
         setUserToDelete(null); // Đặt lại người dùng cần xóa
     };
-    // Hàm sắp xếp theo tên tài khoản
-    const sortedUsers = [...users].sort((a, b) => a.username.localeCompare(b.username));
+// Hàm sắp xếp theo tên tài khoản và role
+    const sortedUsers = [...users].sort((a, b) => {
+        // So sánh dựa trên role: USER trước, ADMIN sau
+        if (a.role.roleName === "ROLE_USER" && b.role.roleName === "ROLE_ADMIN") {
+            return -1; // USER xuất hiện trước ADMIN
+        } else if (a.role.roleName === "ROLE_ADMIN" && b.role.roleName === "ROLE_USER") {
+            return 1;  // ADMIN xuất hiện sau USER
+        }
+        // Nếu cùng role, sắp xếp theo username
+        return a.username.localeCompare(b.username);
+    });
+
     // Hàm tìm kiếm
     const handleSearch = () => {
-        setIsSearching(true); // Đặt chế độ tìm kiếm
-        setPage(0); // Đặt lại trang về trang đầu tiên khi tìm kiếm mới
-        // Gọi lại fetchData với các tham số tìm kiếm
+        setIsSearching(true);
+        setPage(0);
+
         const fetchData = async () => {
             setLoading(true);
+
             try {
-                const data = await searchUsers(userName, fullName, numberPhone, token, 0); // Sử dụng page 0 cho tìm kiếm
+                // Kiểm tra nếu tất cả các trường tìm kiếm đều trống
+                const minSalary = !userName && !fullName && !numberPhone ? 1 : null; // Chỉ lấy người dùng có lương > 0 khi tất cả các trường trống
+                // console.log("minSalary:", minSalary); // Kiểm tra giá trị minSalary
+
+                const data = await searchUsers(userName, fullName, numberPhone, token, 0, 10, minSalary);
                 setUsers(data.content);
                 setTotalPages(data.totalPages);
             } catch (error) {
                 setError("Có lỗi xảy ra khi tìm kiếm người dùng.");
             }
+
             setLoading(false);
         };
+
         fetchData();
     };
 
@@ -114,8 +145,14 @@ export default function UserList({resetList, setResetList}) {
         setShowModal(false); // Ẩn modal
         setSelectedUser(null); // Đặt lại người dùng đã chọn
     };
-    if (loading) return <p>Đang tải...</p>;
-    if (error) return <p>{error}</p>;
+    // Kiểm tra lỗi và trạng thái loading
+    if (loading) {
+        return <div>Đang tải dữ liệu...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
 
     return (
         <div className={style['page-background']}>
@@ -156,69 +193,72 @@ export default function UserList({resetList, setResetList}) {
                         </div>
                     </div>
 
-                    {users.length > 0 ? (
-                        <>
-                            <div className="container-table">
-                                <div className={style['add-button-container']}>
-                                    <Link to="/users/add" className={style['btn-add']}>
-                                        <i className="fa-solid fa-user-plus"></i> Thêm mới nhân viên
-                                    </Link>
+                    <div className="container-table">
+                        {/* Nút "Thêm mới nhân viên" luôn hiển thị */}
+                        <div className={style['add-button-container']}>
+                            <Link to="add" className={style['btn-add']}>
+                                <i className="fa-solid fa-user-plus"></i> Thêm mới nhân viên
+                            </Link>
+                        </div>
 
-                                </div>
-
-                                <div className={style['table-container']}>
-                                    <table className="table table-hover">
-                                        <thead className="table-light">
-                                        <tr>
-                                            <th>STT</th>
-                                            <th>Tên tài khoản</th>
-                                            <th>Họ và tên</th>
-                                            <th>Địa chỉ</th>
-                                            <th>Số điện thoại</th>
-                                            <th>Giới tính</th>
-                                            <th>Ngày sinh</th>
-                                            <th>Lương</th>
-                                            <th>Vị trí</th>
-                                            <th>Tác Vụ</th>
+                        {/* Hiển thị bảng hoặc thông báo "Không có người dùng nào" */}
+                        {users.length > 0 ? (
+                            <div className={style['table-container']}>
+                                <table className="table table-hover">
+                                    <thead className="table-light">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên tài khoản</th>
+                                        <th>Họ và tên</th>
+                                        <th>Địa chỉ</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Giới tính</th>
+                                        <th>Ngày sinh</th>
+                                        <th>Lương</th>
+                                        <th>Vị trí</th>
+                                        <th>Tác Vụ</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {sortedUsers.map((user, index) => (
+                                        <tr key={user.userId}>
+                                            <td>{index + 1 + page * 10}</td>
+                                            <td>{user.username}</td>
+                                            <td>{user.fullName}</td>
+                                            <td>{user.address}</td>
+                                            <td>{user.numberphone}</td>
+                                            <td>{user.gender ? "Nam" : "Nữ"}</td>
+                                            <td>{new Date(user.birthday).toLocaleDateString()}</td>
+                                            <td>{user.salary}</td>
+                                            <td>{user.role.roleName === "ROLE_USER" ? "Nhân viên" : "Quản lý"}</td>
+                                            <td>
+                                                <div className={style['action-buttons']}>
+                                                    <button onClick={() => handleShowModal(user)} className="btn btn-sm btn-link">
+                                                        <i className="fa-solid fa-eye" style={{ color: "#213250" }}></i>
+                                                    </button>
+                                                    <Link to={`/admin/users/update/${user.userId}`} className="btn btn-sm btn-link">
+                                                        <i className="fa-solid fa-pen-to-square" style={{ color: "#2286d0" }}></i>
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => confirmDelete(user)}
+                                                        className="btn btn-sm btn-link delete"
+                                                        disabled={user.role.roleName === "ROLE_ADMIN"} // Vô hiệu hóa nếu vai trò là "Quản lý"
+                                                        style={{ color: user.role.roleName === "ROLE_ADMIN" ? "#ccc" : "#c01b39" }} // Màu sắc khác khi bị vô hiệu
+                                                    >
+                                                        <i className="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                         </tr>
-                                        </thead>
-                                        <tbody>
-                                        {sortedUsers.map((user, index) => (
-                                            <tr key={user.userId}>
-                                                <td>{index + 1 + page * 10}</td>
-                                                <td>{user.username}</td>
-                                                <td>{user.fullName}</td>
-                                                <td>{user.address}</td>
-                                                <td>{user.numberphone}</td>
-                                                <td>{user.gender ? "Nam" : "Nữ"}</td>
-                                                <td>{new Date(user.birthday).toLocaleDateString()}</td>
-                                                <td>{user.salary}</td>
-                                                <td>{user.role.roleName==="ROLE_USER"?"Nhân viên":"Quản lý"}</td>
-                                                <td>
-                                                    <div className={style['action-buttons']}>
-                                                        <button onClick={() => handleShowModal(user)} className="btn btn-sm btn-link">
-                                                            <i className="fa-solid fa-eye" style={{ color: "#213250" }}></i>
-                                                        </button>
-                                                        <Link to={`/users/update/${user.userId}`} className="btn btn-sm btn-link">
-                                                            <i className="fa-solid fa-pen-to-square" style={{ color: "#2286d0" }}></i>
-                                                        </Link>
-                                                        <button onClick={() => confirmDelete(user)} className="btn btn-sm btn-link delete">
-                                                            <i className="fa-solid fa-trash" style={{ color: "#c01b39" }}></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-
+                                    ))}
+                                    </tbody>
+                                </table>
                             </div>
-                        </>
-                    ) : (
-                        <p>Không có người dùng nào.</p>
-                    )}
+                        ) : (
+                            <p>Không có người dùng nào.</p>
+                        )}
+                    </div>
+
                     {/* Modal Chi Tiết */}
                     <Modal show={showModal} onHide={handleCloseModal} className={style['modal']}>
                         <Modal.Header closeButton className={style['modal-header']}>

@@ -1,35 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
-import ListUser from "./component/ListUser";
-import {NavLink, Route, Routes} from "react-router-dom";
-import CreateEmployee from "./component/AddUser";
-import UpdateUserForm from "./component/UpdateUser";
-import 'react-toastify/dist/ReactToastify.css';
+import { Navigate, Route, Routes } from "react-router-dom";
+import Dashboard from "./component/dashboard"; // Import component Dashboard
+import ListUser from "./component/ListUser"; // Import danh sách người dùng
+import CreateEmployee from "./component/AddUser"; // Import form thêm mới
+import UpdateUser from "./component/UpdateUser";
 import {ToastContainer} from "react-toastify";
-import React, {useState} from "react"; // Import CSS for Toastify
-
-
+import UserList from "./component/ListUser";
+import {useState} from "react";
 function App() {
-    const [resetList, setResetList] = useState(false);
-    const handleResetList = () => {
-        setResetList(true);
-    };
-  return (
-      <div className="App">
-        <nav>
-          <NavLink to="/users" onClick={handleResetList}>Danh sách users</NavLink>
-          {/*<NavLink to="/users/add">Create</NavLink>*/}
+    const [resetList, setResetList] = useState(false); // Định nghĩa ở đây
+    return (
+        <div className="App">
+            <Routes>
+                <Route path="/" element={<Navigate to="/admin" />} />
+                <Route path="/admin" element={<Dashboard setResetList={setResetList} />}>
+                    <Route path="users" element={<UserList resetList={resetList} setResetList={setResetList} />} />
+                    <Route path="users/add" element={<CreateEmployee />} /> {/* Route cho form thêm mới */}
+                    <Route path="users/update/:userId" element={<UpdateUser />} />
+                </Route>
+            </Routes>
+            <ToastContainer></ToastContainer>
 
-        </nav>
-        <Routes>
-          <Route path="/users" element={<ListUser resetList={resetList} setResetList={setResetList}/>}></Route>
-          <Route path="/users/add" element={<CreateEmployee/>}></Route>
-            <Route path="/users/update/:userId" element={<UpdateUserForm />} /> {/* Route cho trang cập nhật */}
-
-        </Routes>
-          <ToastContainer /> {/* Thêm ToastContainer */}
-
-      </div>
-  );
+        </div>
+    );
 }
+
 export default App;
